@@ -3,7 +3,7 @@ hOCR4J
 
 Java library for parsing HOCR files.
 
-**Version: 0.0.1**
+**Version: 0.1**
 
 ---
 
