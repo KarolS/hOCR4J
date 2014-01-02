@@ -4,3 +4,8 @@
 *.jar
 *.war
 *.ear
+
+target
+*~
+.idea
+hocr4j.iml
