@@ -1,9 +1,9 @@
-/* Copyright (c) 2014 Karol Stasiak, All Rights Reserved
+/* Copyright (c) 2014 Karol Stasiak
 *
 * This library is free software; you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
 * License as published by the Free Software Foundation; either
-* version 3 of the License, or (at your option) any later version.
+* version 2.1 of the License, or (at your option) any later version.
 *
 * This library is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -62,6 +62,56 @@ public class Bounds implements Comparable<Bounds>, Bounded {
         int bottom = Integer.parseInt(parts[4]);
         return new Bounds(left, top, right, bottom);
     }
+
+    /**
+     * Returns the largest possible bounds.
+     *
+     * @return the entire plane
+     */
+    public static Bounds getEntirePlane() {
+        return new Bounds(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Returns the semiplane on the bottom of the horizontal line with the given coordinate.
+     *
+     * @param y the top edge coordinate
+     * @return the semiplane
+     */
+    public static Bounds getBottomSemiplane(int y) {
+        return new Bounds(Integer.MIN_VALUE, y, Integer.MAX_VALUE, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Returns the semiplane on the left of the vertical line with the given coordinate.
+     *
+     * @param x the right edge coordinate
+     * @return the semiplane
+     */
+    public static Bounds getLeftSemiplane(int x) {
+        return new Bounds(Integer.MIN_VALUE, Integer.MIN_VALUE, x, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Returns the semiplane on the right of the vertical line with the given coordinate.
+     *
+     * @param x the left edge coordinate
+     * @return the semiplane
+     */
+    public static Bounds getRightSemiplane(int x) {
+        return new Bounds(x, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Returns the semiplane on the top of the horizontal line with the given coordinate.
+     *
+     * @param y the bottom edge coordinate
+     * @return the semiplane
+     */
+    public static Bounds getTopSemiplane(int y) {
+        return new Bounds(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, y);
+    }
+
 
     /**
      * Checks if the bounds are empty.
@@ -789,6 +839,196 @@ public class Bounds implements Comparable<Bounds>, Bounded {
     }
 
     /**
+     * Returns bounds created from these bounds,
+     * optionally trimmed from below to the bottom edge of the given limiting bounds.
+     * <br/>
+     * Interprets <code>null</code> as empty bounds, returning <code>null</code>.
+     *
+     * @param limitingBounds bounds with the new bottom edge
+     * @return new bounds, or <code>null</code> if the trimmed bounds are empty
+     */
+    @Nullable
+    public Bounds trimFromBottom(@Nullable Bounds limitingBounds) {
+        if (limitingBounds == null) {
+            return null;
+        }
+        return trimFromBottom(limitingBounds.getBottom());
+    }
+
+    /**
+     * Returns bounds created from these bounds,
+     * optionally trimmed from below to the new bottom edge.
+     *
+     * @param newEdge y coordinate of the new bottom edge
+     * @return new bounds, or <code>null</code> if the trimmed bounds are empty
+     */
+    @Nullable
+    public Bounds trimFromBottom(int newEdge) {
+        if (newEdge < top) {
+            return null;
+        }
+        if (newEdge >= bottom) {
+            return this;
+        }
+        return new Bounds(left, top, right, newEdge);
+    }
+
+    /**
+     * Returns bounds created from these bounds,
+     * optionally trimmed from the left to the left edge of the given limiting bounds.
+     * <br/>
+     * Interprets <code>null</code> as empty bounds, returning <code>null</code>.
+     *
+     * @param limitingBounds bounds with the new left edge
+     * @return new bounds, or <code>null</code> if the trimmed bounds are empty
+     */
+    @Nullable
+    public Bounds trimFromLeft(@Nullable Bounds limitingBounds) {
+        if (limitingBounds == null) {
+            return null;
+        }
+        return trimFromLeft(limitingBounds.getLeft());
+    }
+
+    /**
+     * Returns bounds created from these bounds,
+     * optionally trimmed from the left to the new left edge.
+     *
+     * @param newEdge x coordinate of the new left edge
+     * @return new bounds, or <code>null</code> if the trimmed bounds are empty
+     */
+    @Nullable
+    public Bounds trimFromLeft(int newEdge) {
+        if (newEdge > right) {
+            return null;
+        }
+        if (newEdge <= left) {
+            return this;
+        }
+        return new Bounds(newEdge, top, right, bottom);
+    }
+
+    /**
+     * Returns bounds created from these bounds,
+     * optionally trimmed from the right to the right edge of the given limiting bounds.
+     * <br/>
+     * Interprets <code>null</code> as empty bounds, returning <code>null</code>.
+     *
+     * @param limitingBounds bounds with the new right edge
+     * @return new bounds, or <code>null</code> if the trimmed bounds are empty
+     */
+    @Nullable
+    public Bounds trimFromRight(@Nullable Bounds limitingBounds) {
+        if (limitingBounds == null) {
+            return null;
+        }
+        return trimFromRight(limitingBounds.getRight());
+    }
+
+    /**
+     * Returns bounds created from these bounds,
+     * optionally trimmed from the right to the new right edge.
+     *
+     * @param newEdge x coordinate of the new right edge
+     * @return new bounds, or <code>null</code> if the trimmed bounds are empty
+     */
+    @Nullable
+    public Bounds trimFromRight(int newEdge) {
+        if (newEdge < left) {
+            return null;
+        }
+        if (newEdge >= right) {
+            return this;
+        }
+        return new Bounds(left, top, newEdge, bottom);
+    }
+
+    /**
+     * Returns bounds created from these bounds,
+     * optionally trimmed from above to the top edge of the given limiting bounds.
+     * <br/>
+     * Interprets <code>null</code> as empty bounds, returning <code>null</code>.
+     *
+     * @param limitingBounds bounds with the new top edge
+     * @return new bounds, or <code>null</code> if the trimmed bounds are empty
+     */
+    @Nullable
+    public Bounds tripFromTop(@Nullable Bounds limitingBounds) {
+        if (limitingBounds == null) {
+            return null;
+        }
+        return trimFromBottom(limitingBounds.getBottom());
+    }
+
+    /**
+     * Returns bounds created from these bounds,
+     * optionally trimmed from above to the new top edge.
+     *
+     * @param newEdge y coordinate of the new top edge
+     * @return new bounds, or <code>null</code> if the trimmed bounds are empty
+     */
+    @Nullable
+    public Bounds tripFromTop(int newEdge) {
+        if (newEdge > bottom) {
+            return null;
+        }
+        if (newEdge <= top) {
+            return this;
+        }
+        return new Bounds(left, newEdge, right, bottom);
+    }
+
+    /**
+     * Creates new bounds that have the same y coordinates as these ones,
+     * but have the x coordinates contained in both x coordinates of these bounds
+     * as the coordinates of the other bounds (<code>heightSource</code>).
+     * <br/>
+     * Interprets <code>null</code> as empty bounds, returning <code>null</code>.
+     *
+     * @param heightSource bounds with interesting y coordinates
+     * @return bounds with trimmed height, or <code>null</code> if they would be empty
+     */
+    @Nullable
+    public Bounds trimHeight(@Nullable Bounded heightSource) {
+        if (heightSource == null) {
+            return null;
+        }
+        if (heightSource == this) {
+            return this;
+        }
+        return new Bounds(
+                left,
+                max(heightSource.getBounds().top, top),
+                right,
+                min(heightSource.getBounds().bottom, bottom));
+    }
+
+    /**
+     * Creates new bounds that have the same y coordinates as these ones,
+     * but have the x coordinates contained in both x coordinates of these bounds
+     * as the coordinates of the other bounds (<code>widthSource</code>).
+     * <br/>
+     * Interprets <code>null</code> as empty bounds, returning <code>null</code>.
+     *
+     * @param widthSource bounds with interesting x coordinates
+     * @return bounds with trimmed width, or <code>null</code> if they would be empty
+     */
+    @Nullable
+    public Bounds trimWidth(@Nullable Bounded widthSource) {
+        if (widthSource == null) {
+            return null;
+        }
+        if (widthSource == this) {
+            return this;
+        }
+        return new Bounds(
+                max(widthSource.getBounds().left, left),
+                top,
+                min(widthSource.getBounds().right, right),
+                bottom);
+    }
+
+    /**
      * A union of bounds.
      * <br/>
      * Interprets <code>null</code> as empty bounds, returning these bounds unmodified.
@@ -808,5 +1048,49 @@ public class Bounds implements Comparable<Bounds>, Bounded {
             return this;
         }
         return new Bounds(min(left, b.left), min(top, b.top), max(right, b.right), max(bottom, b.bottom));
+    }
+
+    /**
+     * Returns a copy of these bounds with a new bottom edge.
+     *
+     * @param newBottom y coordinate of the bottom edge
+     * @return bounds with new edge
+     */
+    @Nonnull
+    public Bounds withBottom(int newBottom) {
+        return new Bounds(left, top, right, newBottom);
+    }
+
+    /**
+     * Returns a copy of these bounds with a new left edge.
+     *
+     * @param newLeft x coordinate of the left edge
+     * @return bounds with new edge
+     */
+    @Nonnull
+    public Bounds withLeft(int newLeft) {
+        return new Bounds(newLeft, top, right, bottom);
+    }
+
+    /**
+     * Returns a copy of these bounds with a new right edge.
+     *
+     * @param newRight x coordinate of the right edge
+     * @return bounds with new edge
+     */
+    @Nonnull
+    public Bounds withRight(int newRight) {
+        return new Bounds(left, top, newRight, bottom);
+    }
+
+    /**
+     * Returns a copy of these bounds with a new top edge.
+     *
+     * @param newTop y coordinate of the top edge
+     * @return bounds with new edge
+     */
+    @Nonnull
+    public Bounds withTop(int newTop) {
+        return new Bounds(left, newTop, right, bottom);
     }
 }

@@ -11,7 +11,7 @@
 
     <groupId>io.github.karols</groupId>
     <artifactId>hocr4j</artifactId>
-    <version>0.1</version>
+    <version>0.1.1</version>
 
     <name>hOCR4J</name>
     <url>http://www.github.com/KarolS/hOCR4J</url>

@@ -1,9 +1,9 @@
-/* Copyright (c) 2014 Karol Stasiak, All Rights Reserved
+/* Copyright (c) 2014 Karol Stasiak
 *
 * This library is free software; you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
 * License as published by the Free Software Foundation; either
-* version 3 of the License, or (at your option) any later version.
+* version 2.1 of the License, or (at your option) any later version.
 *
 * This library is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,7 +37,7 @@ public class TextUtils {
                     "UuUuWwYyYZzZzZzs";
     private static Pattern SMALLER = Pattern.compile("^([,‚„\\._ ]*|[\"\'‘“”’\\^ ]*)$");
 
-    private static int fuzzyConsume(@Nonnull String s1, @Nonnull String s2) {
+    private static int fuzzyConsume(@Nonnull String s1, @Nonnull String s2, boolean caseInsensitive) {
         int i1 = 0;
         int i2 = 0;
         boolean canSkip1 = true;
@@ -46,7 +46,7 @@ public class TextUtils {
             boolean notMoved = true;
             char c1 = s1.charAt(i1);
             char c2 = s2.charAt(i2);
-            if (fuzzyEqual(c1, c2)) {
+            if (fuzzyEqual(c1, c2, caseInsensitive)) {
                 i1++;
                 i2++;
                 canSkip1 = true;
@@ -98,18 +98,35 @@ public class TextUtils {
      * @see TextUtils#fuzzyEqual(String, String)
      */
     public static boolean fuzzyContains(@Nonnull String haystack, @Nonnull String needle) {
+        return fuzzyContains(haystack, needle, false);
+    }
+
+    /**
+     * Checks if the needle string
+     * is actually a substring of the given haystack string,
+     * using the same equality as <code>fuzzyEqual</code>.
+     *
+     * @param haystack        the long string
+     * @param needle          potential substring
+     * @param caseInsensitive <code>true</code> if the comparison has to be case-insensitive
+     * @return <code>true</code> if <code>needle</code>
+     *         is a fuzzy substring of <code>haystack</code>, <code>false</code> otherwise
+     * @see TextUtils#fuzzyEqual(String, String, boolean)
+     */
+    public static boolean fuzzyContains(@Nonnull String haystack, @Nonnull String needle, boolean caseInsensitive) {
         for (int i = 0; i < haystack.length(); i++) {
-            if (fuzzyPrefix(haystack.substring(i), needle)) {
+            if (fuzzyPrefix(haystack.substring(i), needle, caseInsensitive)) {
                 return true;
             }
         }
         return false;
     }
 
-    private static boolean fuzzyEqual(char c1, char c2) {
+    private static boolean fuzzyEqual(char c1, char c2, boolean caseInsensitive) {
         c1 = toAscii(c1);
         c2 = toAscii(c2);
         if (c1 == c2) return true;
+        if (caseInsensitive && Character.toLowerCase(c1) == Character.toLowerCase(c2)) return true;
         if ("lI1".indexOf(c1) >= 0 && "lI1".indexOf(c2) >= 0) return true;
         if ("0Oo".indexOf(c1) >= 0 && "0Oo".indexOf(c2) >= 0) return true;
         if (",.".indexOf(c1) >= 0 && ",.".indexOf(c2) >= 0) return true;
@@ -117,6 +134,18 @@ public class TextUtils {
         if ("„“”\"".indexOf(c1) >= 0 && "„“”\"".indexOf(c2) >= 0) return true;
         //TODO
         return false;
+    }
+
+    /**
+     * Checks is the strings are approximately equal, case sensitively.
+     *
+     * @param s1 first string
+     * @param s2 second string
+     * @return <code>true</code> if the strings are approximately equal, <code>false</code> otherwise
+     * @see TextUtils#fuzzyEqual(String, String, boolean)
+     */
+    public static boolean fuzzyEqual(@Nullable String s1, @Nullable String s2) {
+        return fuzzyEqual(s1, s2, false);
     }
 
     /**
@@ -130,6 +159,7 @@ public class TextUtils {
      * <ul>
      * <li>they are equal</li>
      * <li>they are equal after running through <code>toAscii</code></li>
+     * <li><code>caseInsensitive</code> is <code>true</code> and they are equal ignoring case after running through <code>toAscii</code></li>
      * <li>they both belong to the set: uppercase I, lowercase ell, Arabic digit one</li>
      * <li>they both belong to the set: uppercase O, lowercase o, Arabic digit zero</li>
      * <li>they are both double quote marks, regardless of their kind</li>
@@ -139,15 +169,16 @@ public class TextUtils {
      * <br/>
      * Negligible characters are single quote marks and ASCII commas.
      *
-     * @param s1 first string
-     * @param s2 second string
+     * @param s1              first string
+     * @param s2              second string
+     * @param caseInsensitive <code>true</code> if the comparison has to be case-insensitive
      * @return <code>true</code> if the strings are approximately equal, <code>false</code> otherwise
      */
-    public static boolean fuzzyEqual(@Nullable String s1, @Nullable String s2) {
+    public static boolean fuzzyEqual(@Nullable String s1, @Nullable String s2, boolean caseInsensitive) {
         if (s1 == null) {
             return s2 == null;
         }
-        return s2 != null && 0 == fuzzyConsume(s1, s2);
+        return s2 != null && 0 == fuzzyConsume(s1, s2, caseInsensitive);
     }//tested
 
     /**
@@ -162,7 +193,23 @@ public class TextUtils {
      * @see TextUtils#fuzzyEqual(String, String)
      */
     public static boolean fuzzyPrefix(@Nonnull String str, @Nonnull String prefix) {
-        return fuzzyConsume(str, prefix) >= 0;
+        return fuzzyConsume(str, prefix, false) >= 0;
+    }//tested
+
+    /**
+     * Checks if the potential prefix string
+     * is actually a prefix of the given string,
+     * using the same equality as <code>fuzzyEqual</code>.
+     *
+     * @param str             the long string
+     * @param prefix          potential prefix
+     * @param caseInsensitive <code>true</code> if the comparison has to be case-insensitive
+     * @return <code>true</code> if <code>prefix</code>
+     *         is a fuzzy prefix of <code>str</code>, <code>false</code> otherwise
+     * @see TextUtils#fuzzyEqual(String, String, boolean)
+     */
+    public static boolean fuzzyPrefix(@Nonnull String str, @Nonnull String prefix, boolean caseInsensitive) {
+        return fuzzyConsume(str, prefix, caseInsensitive) >= 0;
     }//tested
 
     private static boolean isNegligible(char c) {

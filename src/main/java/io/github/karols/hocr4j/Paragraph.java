@@ -1,9 +1,9 @@
-/* Copyright (c) 2014 Karol Stasiak, All Rights Reserved
+/* Copyright (c) 2014 Karol Stasiak
 *
 * This library is free software; you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
 * License as published by the Free Software Foundation; either
-* version 3 of the License, or (at your option) any later version.
+* version 2.1 of the License, or (at your option) any later version.
 *
 * This library is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -170,6 +170,21 @@ public class Paragraph extends DelegatingUnmodifiableList<Line> implements Bound
         return result;
     }
 
+    /**
+     * Returns the list of all lines in this paragraph converted to strings.
+     *
+     * @return all lines as strings
+     * @see Line#mkString()
+     */
+    @Nonnull
+    public List<String> getAllLinesAsString() {
+        List<String> result = new ArrayList<String>(size());
+        for (Line l : lines) {
+            result.add(l.mkString());
+        }
+        return result;
+    }
+
     @Override
     public Bounds getBounds() {
         return bounds;
@@ -224,6 +239,7 @@ public class Paragraph extends DelegatingUnmodifiableList<Line> implements Bound
     /**
      * Creates a new paragraph with all lines modified by the given function.
      * Bounds are recalculated unless this paragraph contains no lines.
+     *
      * @param f line-modifying function
      * @return modified paragraph
      */
@@ -242,6 +258,7 @@ public class Paragraph extends DelegatingUnmodifiableList<Line> implements Bound
      * Bounds are recalculated unless this paragraph contains no lines;
      * If there are no lines, the bounds of this paragraph
      * are modified using the given function.
+     *
      * @param f bounds-modifying function
      * @return modified paragraph
      */
@@ -269,7 +286,7 @@ public class Paragraph extends DelegatingUnmodifiableList<Line> implements Bound
 
     @Nonnull
     public String toString() {
-        return "PARAGRAPH: " + lines;
+        return lines.toString();
     }
 
 }

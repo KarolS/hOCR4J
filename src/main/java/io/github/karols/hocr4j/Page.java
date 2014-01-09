@@ -1,9 +1,9 @@
-/* Copyright (c) 2014 Karol Stasiak, All Rights Reserved
+/* Copyright (c) 2014 Karol Stasiak
 *
 * This library is free software; you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
 * License as published by the Free Software Foundation; either
-* version 3 of the License, or (at your option) any later version.
+* version 2.1 of the License, or (at your option) any later version.
 *
 * This library is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,6 +37,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * Creates a list of pages from a list of HOCR documents.
      * A document can contain several pages.
      * The pages are numbered consecutively, starting from 1.
+     *
      * @param hocr list of HOCR documents
      * @return list of pages
      */
@@ -54,34 +55,36 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
 
     /**
      * Creates a list of pages with new page numbers
+     *
      * @param startFrom new page number for the first page
-     * @param pages list of pages
+     * @param pages     list of pages
      * @return list of pages with new page numbers
      */
     @Nonnull
-    public static List<Page> changePageNumbers(int startFrom, @Nonnull List<Page> pages){
+    public static List<Page> changePageNumbers(int startFrom, @Nonnull List<Page> pages) {
         List<Page> result = new ArrayList<Page>();
         int pageNo = startFrom;
-        for(Page p: pages) {
+        for (Page p : pages) {
             result.add(p.changePageNumber(pageNo));
-            pageNo ++;
+            pageNo++;
         }
         return result;
     }
 
     /**
      * Creates a list of pages with new page numbers
+     *
      * @param startFrom new page number for the first page
-     * @param pages pages
+     * @param pages     pages
      * @return list of pages with new page numbers
      */
     @Nonnull
-    public static List<Page> changePageNumbers(int startFrom, @Nonnull Page... pages){
+    public static List<Page> changePageNumbers(int startFrom, @Nonnull Page... pages) {
         List<Page> result = new ArrayList<Page>();
         int pageNo = startFrom;
-        for(Page p: pages) {
+        for (Page p : pages) {
             result.add(p.changePageNumber(pageNo));
-            pageNo ++;
+            pageNo++;
         }
         return result;
     }
@@ -94,7 +97,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * Creates a page from the corresponding HOCR &lt;div&gt; tag
      *
      * @param pageNo page number
-     * @param e HOCR tag
+     * @param e      HOCR tag
      * @throws IllegalArgumentException if not a valid &lt;div&gt; tag
      */
     public Page(int pageNo, @Nonnull HocrElement e) {
@@ -122,8 +125,9 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
     /**
      * Creates a page containing given areas.
      * The page bounds are calculated.
+     *
      * @param pageNo page number
-     * @param a list of areas (not empty)
+     * @param a      list of areas (not empty)
      */
     public Page(int pageNo, @Nonnull List<Area> a) {
         if (a == null || a.isEmpty()) throw new IllegalArgumentException();
@@ -134,9 +138,10 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
 
     /**
      * Creates a page containing given areas.
+     *
      * @param pageNo page number
-     * @param a list of areas (can be empty)
-     * @param b bounds of the page
+     * @param a      list of areas (can be empty)
+     * @param b      bounds of the page
      */
     public Page(int pageNo, @Nonnull List<Area> a, Bounds b) {
         if (a == null) throw new IllegalArgumentException();
@@ -170,6 +175,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * If the page contains less that 10 words, nothing is removed.
      * Tiny print is defined as having height lower than
      * 1/6th of median word height, or 1/12th if the word is smaller.
+     *
      * @return page without tiny print
      * @see TextUtils#isSmaller(String)
      */
@@ -233,6 +239,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
     /**
      * Creates copy of this page containing
      * only the words that are contained in given rectangle.
+     *
      * @param rectangle bounding rectangle
      * @return page cropped to the bounding rectangle
      */
@@ -251,6 +258,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
     /**
      * Creates copy of this page containing
      * only the lines that are contained in and/or touch given rectangle.
+     *
      * @param rectangle bounding rectangle
      * @return page with lines touching the bounding rectangle
      */
@@ -281,6 +289,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
     /**
      * Finds all lines that satisfy the given predicate.
      * The line order is unspecified.
+     *
      * @param predicate predicate to satisfy
      * @return lines that satisfy the predicate
      */
@@ -326,10 +335,10 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * gives the highest <b>non-negative</b> result.
      * Lines that yield negative or <code>null</code> result are considered not matching.
      * If no line is found, returns <code>null</code>.
+     *
      * @param scoreFunction score function
-     * @return
-     * a line with the highest non-negative score,
-     * or <code>null</code> if none found
+     * @return a line with the highest non-negative score,
+     *         or <code>null</code> if none found
      */
     @Nullable
     public Line findLineMaximizing(@Nonnull Function<Line, Double> scoreFunction) {
@@ -342,11 +351,11 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * biased towards lines that are closer to <code>header</code>.
      * Lines that yield negative or <code>null</code> result are considered not matching.
      * If no line is found, returns <code>null</code>.
+     *
      * @param scoreFunction score function
-     * @param header object in proximity of which the result is preferred
-     * @return
-     * a line with one of the highest non-negative scores near <code>header</code>,
-     * or <code>null</code> if none found
+     * @param header        object in proximity of which the result is preferred
+     * @return a line with one of the highest non-negative scores near <code>header</code>,
+     *         or <code>null</code> if none found
      */
     @Nullable
     public Line findLineMaximizingCloseTo(Function<Line, Double> scoreFunction, @Nonnull Bounds header) {
@@ -392,11 +401,11 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * biased towards lines that are close to and below <code>header</code>.
      * Lines that yield negative or <code>null</code> result are considered not matching.
      * If no line is found, returns <code>null</code>.
+     *
      * @param scoreFunction score function
-     * @param header object in proximity of which the result is preferred
-     * @return
-     * a line with one of the highest non-negative scores near <code>header</code>,
-     * or <code>null</code> if none found
+     * @param header        object in proximity of which the result is preferred
+     * @return a line with one of the highest non-negative scores near <code>header</code>,
+     *         or <code>null</code> if none found
      */
     @Nullable
     public Line findLineMaximizingPreferablySlightlyBelow(@Nonnull Function<Line, Double> scoreFunction, @Nonnull Bounds header) {
@@ -408,10 +417,10 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * gives the lowest <b>non-negative</b> result.
      * Lines that yield negative or <code>null</code> result are considered not matching.
      * If no line is found, returns <code>null</code>.
+     *
      * @param scoreFunction score function
-     * @return
-     * a line with the lowest non-negative score,
-     * or <code>null</code> if none found
+     * @return a line with the lowest non-negative score,
+     *         or <code>null</code> if none found
      */
     @Nullable
     public Line findLineMinimizing(@Nonnull Function<Line, Double> scoreFunction) {
@@ -424,11 +433,11 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * biased towards lines that are closer to <code>header</code>.
      * Lines that yield negative or <code>null</code> result are considered not matching.
      * If no line is found, returns <code>null</code>.
+     *
      * @param scoreFunction score function
-     * @param header object in proximity of which the result is preferred
-     * @return
-     * a line with one of the lowest non-negative scores near <code>header</code>,
-     * or <code>null</code> if none found
+     * @param header        object in proximity of which the result is preferred
+     * @return a line with one of the lowest non-negative scores near <code>header</code>,
+     *         or <code>null</code> if none found
      */
     @Nullable
     public Line findLineMinimizingCloseTo(Function<Line, Double> scoreFunction, @Nonnull Bounds header) {
@@ -474,11 +483,11 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * biased towards lines that are close to and below <code>header</code>.
      * Lines that yield negative or <code>null</code> result are considered not matching.
      * If no line is found, returns <code>null</code>.
+     *
      * @param scoreFunction score function
-     * @param header object in proximity of which the result is preferred
-     * @return
-     * a line with one of the lowest non-negative scores near <code>header</code>,
-     * or <code>null</code> if none found
+     * @param header        object in proximity of which the result is preferred
+     * @return a line with one of the lowest non-negative scores near <code>header</code>,
+     *         or <code>null</code> if none found
      */
     @Nullable
     public Line findLineMinimizingPreferablySlightlyBelow(@Nonnull Function<Line, Double> scoreFunction, @Nonnull Bounds header) {
@@ -488,6 +497,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
     /**
      * Returns the list of all lines in the page
      * in the natural left-to-right reading order.
+     *
      * @return all lines
      */
     @Nonnull
@@ -506,6 +516,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * Returns the list of all lines in the page
      * in the natural left-to-right reading order,
      * converted to mutable lists of words.
+     *
      * @return all lines as lists of words
      */
     @Nonnull
@@ -524,6 +535,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * Returns the list of all lines in the page
      * in the natural left-to-right reading order,
      * converted to strings.
+     *
      * @return all lines as strings
      * @see Line#mkString()
      */
@@ -540,8 +552,24 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
     }
 
     /**
+     * Returns the list of all paragraphs in the page.
+     * The order is unspecified.
+     *
+     * @return list of all the words
+     */
+    @Nonnull
+    public List<Paragraph> getAllParagraphs() {
+        ArrayList<Paragraph> paragraphs = new ArrayList<Paragraph>();
+        for (Area a : areas) {
+            paragraphs.addAll(a);
+        }
+        return paragraphs;
+    }
+
+    /**
      * Returns the list of all words in the page.
      * The order is unspecified.
+     *
      * @return list of all the words
      */
     @Nonnull
@@ -591,6 +619,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
 
     /**
      * Returns the number of this page.
+     *
      * @return page number
      */
     public int getPageNo() {
@@ -649,6 +678,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * the bounds are expanded to the right until they meet the page edge
      * or another column of text.
      * May behave unexpectedly if the column has only few lines.
+     *
      * @param b bounds that span the entire height of the column
      * @return bounds of the column
      * @see Page#growBoundsUntilTheyStopCuttingWords(Bounds)
@@ -705,6 +735,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * that contain the given bounds and do not cut any word,
      * Bounds cut a word if the word is neither inside the bounds nor outside the bounds.
      * Returns <code>null</code> if given <code>null</code>.
+     *
      * @param b bounds to expand
      * @return expanded bounds, or <code>null</code> if <code>b</code> is <code>null</code>
      */
@@ -750,6 +781,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
     /**
      * Creates a new page with all areas modified by the given function.
      * Bounds are recalculated unless this page contains no areas.
+     *
      * @param f area-modifying function
      * @return modified page
      */
@@ -768,6 +800,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * Bounds are recalculated unless this page contains no areas;
      * If there are no areas, the bounds of this page
      * are modified using the given function.
+     *
      * @param f bounds-modifying function
      * @return modified page
      */
@@ -790,6 +823,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
     /**
      * Creates a new page with all lines modified by the given function.
      * Bounds are recalculated unless this page contains no lines.
+     *
      * @param lineFunction line-modifying function
      * @return modified paragraph
      */
@@ -813,11 +847,23 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
 
     /**
      * Creates a copy of this page with new page number.
+     *
      * @param newPageNo new page number
      * @return copy with new page number
      */
-    public Page changePageNumber(int newPageNo){
-        return new Page((Void)null, newPageNo, areas, bounds);
+    public Page changePageNumber(int newPageNo) {
+        return new Page((Void) null, newPageNo, areas, bounds);
+    }
+
+    /**
+     * Returns a new page with only one area containing all the paragraphs.
+     *
+     * @return a page with merged areas
+     */
+    @Nonnull
+    public Page mergeAllAreas() {
+        Area a = new Area(getAllParagraphs());
+        return new Page(pageNo, Collections.singletonList(a));
     }
 
     @Nonnull
@@ -828,7 +874,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
 
     @Nonnull
     public String toString() {
-        return "PAGE: " + areas;
+        return "PAGE #" + pageNo + ": " + areas;
     }
 
 }
