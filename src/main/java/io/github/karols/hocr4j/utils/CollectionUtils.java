@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 /**
  * Utility functions for dealing with collections.
  */
-public class CollectionUtils {
+public final class CollectionUtils {
 
     private CollectionUtils(){}
 

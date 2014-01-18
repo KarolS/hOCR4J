@@ -27,7 +27,14 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+/**
+ * Represents an area in the OCR'd document.
+ *
+ * Corresponding hOCR class: <code>ocr_carea</code>.
+ */
+@Immutable
 public class Area extends DelegatingUnmodifiableList<Paragraph> implements Bounded {
     private final Bounds bounds;
     private final List<Paragraph> paragraphs;
@@ -275,5 +282,19 @@ public class Area extends DelegatingUnmodifiableList<Paragraph> implements Bound
     @Override
     public String toString() {
         return "AREA: " + paragraphs;
+    }
+
+    /**
+     * Translates the area by given vector.
+     * @param dx x displacement
+     * @param dy y displacement
+     * @return translated area
+     */
+    public Area translate(int dx, int dy) {
+        List<Paragraph> ps = new ArrayList<Paragraph>(paragraphs.size());
+        for(Paragraph p: paragraphs){
+            ps.add(p.translate(dx,dy));
+        }
+        return new Area(null, ps, bounds.translate(dx,dy));
     }
 }

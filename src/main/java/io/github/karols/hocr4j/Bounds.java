@@ -19,6 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Collection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 import static java.lang.Math.*;
 
@@ -28,6 +29,7 @@ import static java.lang.Math.*;
  * The rectangles are specified using integer coordinates
  * and usually the unit used is pixels.
  */
+@Immutable
 public class Bounds implements Comparable<Bounds>, Bounded {
 
     /**
@@ -112,6 +114,19 @@ public class Bounds implements Comparable<Bounds>, Bounded {
         return new Bounds(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, y);
     }
 
+
+    /**
+     * Checks if the bounds have zero area.
+     * <br/>
+     * Treats <code>null</code> as empty.
+     *
+     * @param bounds bounds to check
+     * @return <code>true</code> if given bounds have zero area, false otherwise.
+     * @see Bounds#hasZeroArea()
+     */
+    public static boolean hasZeroArea(@Nullable Bounds bounds) {
+        return bounds == null || bounds.hasZeroArea();
+    }
 
     /**
      * Checks if the bounds are empty.
@@ -551,6 +566,15 @@ public class Bounds implements Comparable<Bounds>, Bounded {
     }
 
     /**
+     * Checks if the bounds have zero area or have negative width or height.
+     *
+     * @return <code>true</code> if the bounds has zero area, <code>false</code> otherwise.
+     */
+    public boolean hasZeroArea() {
+        return left >= right || top >= bottom;
+    }
+
+    /**
      * Checks if these bounds are contained within given bounds.
      * <br/>
      * Interprets <code>null</code> as empty bounds, returning <code>false</code>.
@@ -579,6 +603,20 @@ public class Bounds implements Comparable<Bounds>, Bounded {
     }
 
     /**
+     * Checks if y coordinates of these bounds and the other bounds overlap.
+     * This can be used to check if two sets of bounds belong to text in the same row.
+     * <br/>
+     * Interprets <code>null</code> as empty bounds, returning <code>false</code>.
+     *
+     * @param bounds other bounds
+     * @return <code>true</code> if the bounds are in the same row,
+     *         <code>false</code> otherwise
+     */
+    public boolean inTheSameRowAs(Bounds bounds) {
+        return top <= bounds.bottom && bottom >= bounds.top;
+    }
+
+    /**
      * Returns the intersection of these bounds and the other bounds.
      * <br/>
      * Interprets <code>null</code> as empty bounds, returning <code>null</code>.
@@ -604,7 +642,10 @@ public class Bounds implements Comparable<Bounds>, Bounded {
     }
 
     /**
-     * Checks if the bounds intersect and the intersection has non-zero area.
+     * Checks if the bounds intersect
+     * and the intersection is not empty
+     * and if any of the original bounds have non-zero area,
+     * if the intersection has non-zero area too.
      *
      * @param b other bounds
      * @return <code>true</code> if bounds intersect, <code>false</code> otherwise
@@ -614,7 +655,9 @@ public class Bounds implements Comparable<Bounds>, Bounded {
      */
     public boolean intersects(@Nullable Bounds b) {
         Bounds intersection = intersection(b);
-        return intersection != null && !intersection.isEmpty();
+        boolean operandsZeroArea = hasZeroArea() || b==null || b.hasZeroArea();
+        return intersection != null && !intersection.isEmpty() &&
+                (operandsZeroArea || !intersection.hasZeroArea());
     }
 
     /**
@@ -642,13 +685,13 @@ public class Bounds implements Comparable<Bounds>, Bounded {
     }
 
     /**
-     * Checks if the bounds have zero area or have negative width or height.
+     * Checks if the bounds have negative width or height.
      * Such bounds are considered empty.
      *
      * @return <code>true</code> if the bounds are empty, <code>false</code> otherwise.
      */
     public boolean isEmpty() {
-        return left >= right || top >= bottom;
+        return left > right || top > bottom;
     }
 
     /**
@@ -833,9 +876,20 @@ public class Bounds implements Comparable<Bounds>, Bounded {
      * @param b other bounds
      * @return <code>true</code> if they touch, <code>false</code> otherwise
      * @see Bounds#cuts(Bounds)
+     * @see Bounds#intersects(Bounds)
      */
     public boolean touches(Bounds b) {
         return b != null && top <= b.bottom && b.top <= bottom && left <= b.right && b.left <= right;
+    }
+
+    /**
+     * Translates the bounds by given vector.
+     * @param dx x displacement
+     * @param dy y displacement
+     * @return translated bounds
+     */
+    public Bounds translate(int dx, int dy) {
+        return new Bounds(left + dx, top + dy, right + dx, bottom + dy);
     }
 
     /**

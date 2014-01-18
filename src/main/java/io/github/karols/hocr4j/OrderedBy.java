@@ -15,14 +15,20 @@ package io.github.karols.hocr4j;
 
 import java.util.Comparator;
 
-public class OrderedBy {
+/**
+ * Utility class containing comparators for <code>Bounded</code> objects.
+ *
+ * @see io.github.karols.hocr4j.Bounded
+ * @see io.github.karols.hocr4j.Bounds
+ */
+public final class OrderedBy {
     private final static Comparator<Bounded> CENTER_LEFTWARDS = new Comparator<Bounded>() {
         public int compare(Bounded bounded1, Bounded bounded2) {
             int c1 = bounded1.getBounds().getCenter();
             int c2 = bounded2.getBounds().getCenter();
             if (c1 > c2) return -1;
             if (c1 < c2) return 1;
-            return 0;
+            return FLOW_ORDER.compare(bounded2, bounded1);
         }
     };
     private final static Comparator<Bounded> CENTER_RIGHTWARDS = new Comparator<Bounded>() {
@@ -31,7 +37,7 @@ public class OrderedBy {
             int c2 = bounded2.getBounds().getCenter();
             if (c1 > c2) return 1;
             if (c1 < c2) return -1;
-            return 0;
+            return FLOW_ORDER.compare(bounded1, bounded2);
         }
     };
     private static final Comparator<Bounded> FLOW_ORDER = new Comparator<Bounded>() {
@@ -55,7 +61,11 @@ public class OrderedBy {
     };
     private static final Comparator<Bounded> LEFTISH_RIGHWARDS = new Comparator<Bounded>() {
         public int compare(Bounded bounded1, Bounded bounded2) {
-            return bounded1.getBounds().getLeftish() - bounded2.getBounds().getLeftish();
+            int c1 = bounded1.getBounds().getLeftish();
+            int c2 = bounded2.getBounds().getLeftish();
+            if (c1 > c2) return 1;
+            if (c1 < c2) return -1;
+            return FLOW_ORDER.compare(bounded1, bounded2);
         }
     };
     private final static Comparator<Bounded> MIDDLE_DOWNWARDS = new Comparator<Bounded>() {
@@ -64,7 +74,7 @@ public class OrderedBy {
             int c2 = bounded2.getBounds().getMiddle();
             if (c1 > c2) return 1;
             if (c1 < c2) return -1;
-            return 0;
+            return FLOW_ORDER.compare(bounded1, bounded2);
         }
     };
     private final static Comparator<Bounded> MIDDLE_UPWARDS = new Comparator<Bounded>() {
@@ -73,7 +83,7 @@ public class OrderedBy {
             int c2 = bounded2.getBounds().getMiddle();
             if (c1 > c2) return -1;
             if (c1 < c2) return 1;
-            return 0;
+            return FLOW_ORDER.compare(bounded2, bounded1);
         }
     };
     private static final Comparator<Bounded> REVERSE_FLOW_ORDER = new Comparator<Bounded>() {
@@ -151,4 +161,6 @@ public class OrderedBy {
     }
 
 
+    private OrderedBy() {
+    }
 }

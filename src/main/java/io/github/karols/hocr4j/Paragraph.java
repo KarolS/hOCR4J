@@ -27,7 +27,14 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+/**
+ * Represents a paragraph in the OCR'd document.
+ *
+ * Corresponding hOCR class: <code>ocr_par</code>.
+ */
+@Immutable
 public class Paragraph extends DelegatingUnmodifiableList<Line> implements Bounded {
 
     private final Bounds bounds;
@@ -289,4 +296,18 @@ public class Paragraph extends DelegatingUnmodifiableList<Line> implements Bound
         return lines.toString();
     }
 
+    /**
+     * Translates the paragraph by given vector.
+     *
+     * @param dx x displacement
+     * @param dy y displacement
+     * @return translated paragraph
+     */
+    public Paragraph translate(int dx, int dy) {
+        List<Line> ls = new ArrayList<Line>(lines.size());
+        for (Line l : lines) {
+            ls.add(l.translate(dx, dy));
+        }
+        return new Paragraph(null, ls, bounds.translate(dx, dy));
+    }
 }

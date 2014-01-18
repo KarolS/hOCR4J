@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 /**
  * @author Karol Stasiak
  */
-public class MatchWords {
+public final class MatchWords {
 
     static private class ListW2SM implements Comparable<ListW2SM>, Iterable<WordToStringMatch> {
         private final long hash;
@@ -54,10 +54,10 @@ public class MatchWords {
             return new ListW2SM(head, tail);
         }
 
-        public static Function<ListW2SM, ListW2SM> cons_(final WordToStringMatch head) {
+        public static Function<ListW2SM, ListW2SM> cons_(final WordToStringMatch newHead) {
             return new Function<ListW2SM, ListW2SM>() {
-                public ListW2SM apply(ListW2SM tail) {
-                    return ListW2SM.cons(head, tail);
+                public ListW2SM apply(ListW2SM newTail) {
+                    return ListW2SM.cons(newHead, newTail);
                 }
             };
         }
@@ -249,4 +249,7 @@ public class MatchWords {
         }
         return null;
     }//tested for easy examples
+
+    private MatchWords() {
+    }
 }

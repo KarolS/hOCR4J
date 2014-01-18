@@ -34,6 +34,7 @@ public class PageRenderer {
     final private Collection<Pair<Color, Bounds>> coloredRectanglesToDraw = new ArrayList<Pair<Color, Bounds>>();
     private Color defaultRectangleColor = Color.ORANGE;
     private Color fontColor = Color.RED;
+    private String imageFormat = "png";
     private Font italicFont;
     private Font plainFont;
     final private Collection<Bounds> rectanglesToDraw = new ArrayList<Bounds>();
@@ -123,6 +124,22 @@ public class PageRenderer {
      */
     public void setFontColor(Color fontColor) {
         this.fontColor = fontColor;
+    }
+
+    public String getImageFormat() {
+        return imageFormat;
+    }
+
+    /**
+     * Sets image format that should be used by this renderer.
+     * The format must be supported by ImageIO.write.
+     * <code>"png"</code> (default) and <code>"bmp"</code> are recommended.
+     *
+     * @param imageFormat image format identifier
+     * @see ImageIO#write(java.awt.image.RenderedImage, String, java.io.File)
+     */
+    public void setImageFormat(String imageFormat) {
+        this.imageFormat = imageFormat;
     }
 
     public Font getItalicFont() {
@@ -218,7 +235,7 @@ public class PageRenderer {
      */
     public void renderOnBlank(@Nonnull Page page, @Nonnull File outputFile) throws IOException {
         BufferedImage img = renderOnBlank(page);
-        ImageIO.write(img, "png", outputFile);
+        ImageIO.write(img, imageFormat, outputFile);
     }
 
     /**
@@ -231,7 +248,7 @@ public class PageRenderer {
      */
     public void renderOnTop(@Nonnull Page page, @Nonnull BufferedImage image, @Nonnull File outputFile) throws IOException {
         renderOnTop(page, image);
-        ImageIO.write(image, "png", outputFile);
+        ImageIO.write(image, imageFormat, outputFile);
     }
 
     /**
@@ -246,7 +263,7 @@ public class PageRenderer {
     public void renderOnTop(@Nonnull Page page, @Nonnull File inputFile, @Nonnull File outputFile) throws IOException {
         BufferedImage image = ImageIO.read(inputFile);
         renderOnTop(page, image);
-        ImageIO.write(image, "png", outputFile);
+        ImageIO.write(image, imageFormat, outputFile);
     }
 
     /**

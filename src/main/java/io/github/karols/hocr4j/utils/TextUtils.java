@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 /**
  * Various utility functions for dealing with text.
  */
-public class TextUtils {
+public final class TextUtils {
 
     private static final String tab00c0 =
             "AAAAAAACEEEEIIII" +

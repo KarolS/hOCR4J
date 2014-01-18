@@ -22,13 +22,17 @@ import io.github.karols.hocr4j.utils.TextUtils;
 import com.google.common.base.Function;
 import org.apache.commons.lang3.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+/**
+ * Represents a line in the OCR'd document.
+ *
+ * Corresponding hOCR class: <code>ocr_line</code>.
+ */
+@Immutable
 public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
 
     /**
@@ -221,15 +225,15 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
      * Spaces in the words are ignored.
      * The comparison is made case-sensitive.
      *
-     * @param words string to search
+     * @param wordsToFocusOn string to search
      * @return either the line containing only <code>words</code> cut out from this line,
-     *         or this line
+     * or this line
      * @see Line#findBoundsOfWord(String)
      * @see Line#createBounded(Bounds)
      */
     @Nonnull
-    public Line focusOn(@Nonnull String words) {
-        return this.createBounded(findBoundsOfWord(words));
+    public Line focusOn(@Nonnull String wordsToFocusOn) {
+        return this.createBounded(findBoundsOfWord(wordsToFocusOn));
     }
 
     /**
@@ -238,15 +242,15 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
      * Spaces in the words are ignored.
      * The comparison is made case-insensitive.
      *
-     * @param words string to search
+     * @param wordsToFocusOn string to search
      * @return either the line containing only <code>words</code> cut out from this line,
-     *         or this line
+     * or this line
      * @see Line#findBoundsOfWord(String)
      * @see Line#createBounded(Bounds)
      */
     @Nonnull
-    public Line focusOnCaseInsensitive(@Nonnull String words) {
-        return this.createBounded(findBoundsOfWordCaseInsensitive(words));
+    public Line focusOnCaseInsensitive(@Nonnull String wordsToFocusOn) {
+        return this.createBounded(findBoundsOfWordCaseInsensitive(wordsToFocusOn));
     }
 
     @Override
@@ -410,7 +414,7 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     public List<Word> getWords() {
         ArrayList<Word> words = new ArrayList<Word>();
         for (Word e : this.words) {
-            words.add((Word) e);
+            words.add(e);
         }
         return words;
     }
@@ -476,7 +480,21 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * Creates a string with all words from this space-separated,
+     * Returns a lowercase string containing texts of all words in this line, not separated by spaces.
+     *
+     * @param locale locale used to convert strings to lowercase
+     * @return lowercase string
+     */
+    public String mkLowercaseSpacelessString(Locale locale) {
+        StringBuilder sb = new StringBuilder();
+        for (Word w : words) {
+            sb.append(w.getText().toLowerCase(locale));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Creates a string with all words from this line, space-separated,
      * without the words that may be OCR artifacts.
      *
      * @return string representation of most words in this line.
@@ -554,5 +572,20 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
         }
         sb.append(']');
         return sb.toString();
+    }
+
+    /**
+     * Translates the list by given vector.
+     *
+     * @param dx x displacement
+     * @param dy y displacement
+     * @return translated list
+     */
+    public Line translate(int dx, int dy) {
+        List<Word> ws = new ArrayList<Word>(words.size());
+        for (Word w : words) {
+            ws.add(w.translate(dx, dy));
+        }
+        return new Line(null, ws, bounds.translate(dx, dy));
     }
 }

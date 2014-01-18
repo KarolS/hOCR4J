@@ -23,7 +23,14 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+/**
+ * Represents a word in the OCR'd document.
+ *
+ * Corresponding hOCR class: <code>ocrx_word</code>.
+ */
+@Immutable
 public class Word implements Bounded, Comparable<Word> {
 
     /**
@@ -32,8 +39,9 @@ public class Word implements Bounded, Comparable<Word> {
      * returns union of bounds of those words.
      * If not, returns <code>null</code>.
      * Spaces are ignored. Uses normal, strict string equality.
+     *
      * @param wordList list of words
-     * @param string string to search for
+     * @param string   string to search for
      * @return bounds of the matching words
      * @see Line#findBoundsOfWord(String)
      */
@@ -69,6 +77,7 @@ public class Word implements Bounded, Comparable<Word> {
 
     /**
      * Converts a list of words to a space-separated string.
+     *
      * @param words list of words
      * @return string
      * @see Line#mkString()
@@ -236,6 +245,7 @@ public class Word implements Bounded, Comparable<Word> {
 
     /**
      * Creates a new word with bounds modified by the given function.
+     *
      * @param f bounds-modifying function
      * @return modified word
      */
@@ -247,8 +257,8 @@ public class Word implements Bounded, Comparable<Word> {
     /**
      * Checks if this word may be an OCR artifact rather than actual word.
      * Current implementation just checks if the word has one character or more.
-     * @return
-     * <code>true</code> if this word may be an OCR artifact,
+     *
+     * @return <code>true</code> if this word may be an OCR artifact,
      * <code>false</code> otherwise
      */
     public boolean mayBeOcrArtifact() {
@@ -267,5 +277,16 @@ public class Word implements Bounded, Comparable<Word> {
 
     public String toString() {
         return text;
+    }
+
+    /**
+     * Translates the word by given vector.
+     *
+     * @param dx x displacement
+     * @param dy y displacement
+     * @return translated word
+     */
+    public Word translate(int dx, int dy) {
+        return new Word(text, bounds.translate(dx, dy));
     }
 }

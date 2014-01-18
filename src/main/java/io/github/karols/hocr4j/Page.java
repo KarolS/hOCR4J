@@ -30,7 +30,14 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+/**
+ * Represents a page in the OCR'd document.
+ *
+ * Corresponding hOCR class: <code>ocr_page</code>.
+ */
+@Immutable
 public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
 
     /**
@@ -88,6 +95,26 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
         }
         return result;
     }
+
+    /**
+     * Merges all pages by stacking them vertically into one long page.
+     * @param pages input pages
+     * @return resulting merged page
+     */
+    public static Page merge(List<Page> pages) {
+        List<Area> resultAreas = new ArrayList<Area>();
+        int verticalShift = 0;
+        int maxWidth = 0;
+        for (Page p : pages) {
+            for (Area a : p.areas) {
+                resultAreas.add(a.translate(0, verticalShift));
+            }
+            verticalShift += p.getBounds().getHeight();
+            maxWidth = Math.max(maxWidth, p.getBounds().getWidth());
+        }
+        return new Page(null, pages.get(0).pageNo, resultAreas, new Bounds(0, 0, maxWidth, verticalShift));
+    }
+
 
     private final List<Area> areas;
     private final Bounds bounds;
@@ -245,7 +272,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      */
     @Nonnull
     public Page createBounded(@Nonnull Bounds rectangle) {
-        Page p = new Page((Void) null, pageNo, bounds.intersection(rectangle));
+        Page p = new Page(null, pageNo, bounds.intersection(rectangle));
         for (Area a : areas) {
             Area a2 = a.createBounded(rectangle);
             if (!a2.isBlank()) {
@@ -852,7 +879,7 @@ public class Page extends DelegatingUnmodifiableList<Area> implements Bounded {
      * @return copy with new page number
      */
     public Page changePageNumber(int newPageNo) {
-        return new Page((Void) null, newPageNo, areas, bounds);
+        return new Page(null, newPageNo, areas, bounds);
     }
 
     /**

@@ -184,7 +184,7 @@ public abstract class DelegatingUnmodifiableList<T> implements List<T> {
 
     @Nonnull
     @Override
-    public <U extends Object> U[] toArray(U[] target) {
+    public <U> U[] toArray(U[] target) {
         return getUnderlying().toArray(target);
     }
 }

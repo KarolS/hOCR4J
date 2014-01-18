@@ -17,10 +17,16 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
-public class LineThat {
+/**
+ * Utility class containing predicates and comparators for lines.
+ *
+ * @see io.github.karols.hocr4j.Line
+ */
+public final class LineThat {
 
     private final static Comparator<Line> HAS_LEAST_WORDS = new Comparator<Line>() {
         public int compare(Line line, Line line2) {
@@ -108,10 +114,36 @@ public class LineThat {
         }
     };
 
+    /**
+     * Returns a predicate that tests
+     * if the line contains given string.
+     *
+     * @param string a string to search for,
+     * @return predicate
+     */
     public static Predicate<Line> contains(final String string) {
         return new Predicate<Line>() {
             public boolean apply(Line input) {
                 return input != null && input.mkString().contains(string);
+            }
+        };
+    }
+
+    /**
+     * Returns a predicate that tests
+     * if the line contains given string, ignoring all whitespace and letter case.
+     *
+     * @param needle a string to search for,
+     * @return predicate
+     */
+    public static Predicate<Line> containsIgnoringCaseAndSpace(String needle, final Locale locale) {
+        final String lowercaseSpacelessNeedle = needle.toLowerCase(locale);
+        return new Predicate<Line>() {
+            @Override
+            public boolean apply(@Nullable Line line) {
+                if (line == null) return false;
+                String lowercaseSpacelessLine = line.mkLowercaseSpacelessString(locale);
+                return lowercaseSpacelessLine.contains(lowercaseSpacelessNeedle);
             }
         };
     }
@@ -223,12 +255,67 @@ public class LineThat {
     }
 
     /**
+     * Returns a predicate that tests if a line
+     * is in the same column as the header and below it,
+     * and also satisfies the inner predicate.
+     *
+     * @param header bounds of the column header
+     * @param also   inner predicate
+     * @return predicate
+     */
+    public static Predicate<Line> isBelowInTheSameColumnAndAlso(Bounded header, final Predicate<Line> also) {
+        final Bounds headerBounds = header.getBounds();
+        if (headerBounds == null || also == null) {
+            return Predicates.alwaysFalse();
+        }
+        return new Predicate<Line>() {
+            @Override
+            public boolean apply(@Nullable Line line) {
+                if (line == null) return false;
+                Bounds bounds = line.bounds;
+                if (bounds == null) return false;
+                return bounds.inTheSameColumnAs(headerBounds)
+                        && bounds.isBelow(headerBounds)
+                        && also.apply(line);
+            }
+        };
+    }
+
+    /**
      * Returns a predicate that returns <code>true</code> if the line is not blank.
      *
      * @return predicate
      */
     public static Predicate<Line> isNotBlank() {
         return IS_NOT_BLANK;
+    }
+
+
+    /**
+     * Returns a predicate that tests if a line
+     * is in the same row as the header and to the right of it,
+     * and also satisfies the inner predicate.
+     *
+     * @param header bounds of the row header
+     * @param also   inner predicate
+     * @return predicate
+     */
+    public static Predicate<Line> isRightInTheSameRowAndAlso(Bounded header, final Predicate<Line> also) {
+        final Bounds headerBounds = header.getBounds();
+        if (headerBounds == null || also == null) {
+            return Predicates.alwaysFalse();
+        }
+        return new Predicate<Line>() {
+            @Override
+            public boolean apply(@Nullable Line line) {
+                if (line == null) return false;
+                Bounds bounds = line.bounds;
+                if (bounds == null) return false;
+                return bounds.inTheSameRowAs(headerBounds)
+                        && bounds.isToTheRight(headerBounds)
+                        && also.apply(line);
+            }
+        };
     }
 
     /**
@@ -266,5 +353,9 @@ public class LineThat {
      */
     public static Predicate<Line> matchesRegexIgnoringCase(String regex) {
         return matchesRegex(Pattern.compile(regex, Pattern.CASE_INSENSITIVE));
+    }
+
+
+    private LineThat() {
     }
 }

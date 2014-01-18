@@ -35,13 +35,12 @@
         </developer>
     </developers>
 
-    <project>
-        <scm>
-            <connection>scm:git:git@github.com:KarolS/hOCR4J.git</connection>
-            <developerConnection>scm:git:git@github.com:KarolS/hOCR4J.git</developerConnection>
-            <url>git@github.com:KarolS/hOCR4J.git</url>
-        </scm>
-    </project>
+    <scm>
+        <connection>scm:git:git@github.com:KarolS/hOCR4J.git</connection>
+        <developerConnection>scm:git:git@github.com:KarolS/hOCR4J.git</developerConnection>
+        <url>git@github.com:KarolS/hOCR4J.git</url>
+    </scm>
+    
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
