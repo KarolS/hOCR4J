@@ -9,8 +9,7 @@
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * Lesser General Public License for more details.
-*/
-
+ */
 package io.github.karols.hocr4j;
 
 import io.github.karols.hocr4j.dom.HocrElement;
@@ -42,7 +41,9 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
      */
     public static final Function<Line, List<Word>> GET_WORDS = new Function<Line, List<Word>>() {
         public List<Word> apply(Line input) {
-            if (input == null) return Collections.emptyList();
+            if (input == null) {
+                return Collections.emptyList();
+            }
             return input.getWords();
         }
     };
@@ -54,17 +55,18 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
      */
     public static final Function<Line, String> MK_STRING = new Function<Line, String>() {
         public String apply(Line input) {
-            if (input == null) return "";
+            if (input == null) {
+                return "";
+            }
             return input.mkString();
         }
     };
     final Bounds bounds;
     final List<Word> words;
 
-
     /**
-     * Creates a line from the corresponding HOCR &lt;span&gt; tag
-     * with class="ocr_line"
+     * Creates a line from the corresponding HOCR &lt;span&gt; tag with
+     * class="ocr_line"
      *
      * @param e HOCR tag
      * @throws IllegalArgumentException if not a valid &lt;span&gt; tag
@@ -89,13 +91,14 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * Creates a line containing given words.
-     * The line bounds are calculated.
+     * Creates a line containing given words. The line bounds are calculated.
      *
      * @param words list of words (not empty)
      */
     public Line(@Nonnull List<Word> words) {
-        if (words.isEmpty()) throw new IllegalArgumentException();
+        if (words.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
         this.words = new ArrayList<Word>(words);
         this.bounds = Bounds.ofAll(words);
     }
@@ -104,7 +107,7 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
      * Creates a line containing given words.
      *
      * @param words list of words (not empty)
-     * @param b     bounds of the line
+     * @param b bounds of the line
      */
     public Line(@Nonnull List<Word> words, Bounds b) {
         this.words = new ArrayList<Word>(words);
@@ -122,15 +125,16 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     private Line(Void v, @Nonnull List<Word> words) {
-        if (words.isEmpty()) throw new IllegalArgumentException();
+        if (words.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
         this.words = words;
         this.bounds = Bounds.ofAll(words);
     }
 
     /**
-     * Creates copy of this line containing
-     * only the words that are contained in given rectangle.
-     * If rectangle is <code>null</code>, returns this.
+     * Creates copy of this line containing only the words that are contained in
+     * given rectangle. If rectangle is <code>null</code>, returns this.
      * <b>This differs from the usual interpretation of null bounds.</b>
      *
      * @param rectangle bounding rectangle
@@ -163,12 +167,10 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * If <code>string</code> is made from concatenating
-     * several consecutive words from this line,
-     * returns union of bounds of those words.
-     * If not, returns <code>null</code>.
-     * Words are looked up matching case.
-     * Spaces are ignored. Uses <code>TextUtils.fuzzyContains</code> to match the string.
+     * If <code>string</code> is made from concatenating several consecutive
+     * words from this line, returns union of bounds of those words. If not,
+     * returns <code>null</code>. Words are looked up matching case. Spaces are
+     * ignored. Uses <code>TextUtils.fuzzyContains</code> to match the string.
      *
      * @param string string to search for
      * @return bounds of the matching words
@@ -190,14 +192,11 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
         return bounds;
     }
 
-
     /**
-     * If <code>string</code> is made from concatenating
-     * several consecutive words from this line,
-     * returns union of bounds of those words.
-     * If not, returns <code>null</code>.
-     * Words are looked up ignoring case.
-     * Spaces are ignored. Uses <code>TextUtils.fuzzyContains</code> to match the string.
+     * If <code>string</code> is made from concatenating several consecutive
+     * words from this line, returns union of bounds of those words. If not,
+     * returns <code>null</code>. Words are looked up ignoring case. Spaces are
+     * ignored. Uses <code>TextUtils.fuzzyContains</code> to match the string.
      *
      * @param string string to search for
      * @return bounds of the matching words
@@ -220,14 +219,13 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * Creates a line that is a fragment of this line containing only given words,
-     * or returns this line if it does not contain the words.
-     * Spaces in the words are ignored.
-     * The comparison is made case-sensitive.
+     * Creates a line that is a fragment of this line containing only given
+     * words, or returns this line if it does not contain the words. Spaces in
+     * the words are ignored. The comparison is made case-sensitive.
      *
      * @param wordsToFocusOn string to search
-     * @return either the line containing only <code>words</code> cut out from this line,
-     * or this line
+     * @return either the line containing only <code>words</code> cut out from
+     * this line, or this line
      * @see Line#findBoundsOfWord(String)
      * @see Line#createBounded(Bounds)
      */
@@ -237,14 +235,13 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * Creates a line that is a fragment of this line containing only given words,
-     * or returns this line if it does not contain the words.
-     * Spaces in the words are ignored.
-     * The comparison is made case-insensitive.
+     * Creates a line that is a fragment of this line containing only given
+     * words, or returns this line if it does not contain the words. Spaces in
+     * the words are ignored. The comparison is made case-insensitive.
      *
      * @param wordsToFocusOn string to search
-     * @return either the line containing only <code>words</code> cut out from this line,
-     * or this line
+     * @return either the line containing only <code>words</code> cut out from
+     * this line, or this line
      * @see Line#findBoundsOfWord(String)
      * @see Line#createBounded(Bounds)
      */
@@ -260,10 +257,12 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
 
     /**
      * Returns the closest (according to taxicab distance between centers) line
-     * from the list, treating the lines that are above this line as being twice as far.
+     * from the list, treating the lines that are above this line as being twice
+     * as far.
      *
      * @param lines list of lines
-     * @return the closest line, or <code>null</code> if <code>lines</code> is empty
+     * @return the closest line, or <code>null</code> if <code>lines</code> is
+     * empty
      */
     @Nullable
     public Line getClosestButPreferOnesBelowFrom(@Nonnull List<Line> lines) {
@@ -287,7 +286,7 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
      * Returns the closest (according to taxicab distance between centers) line
      * from the list.
      *
-     * @param line  first line
+     * @param line first line
      * @param lines more lines
      * @return the closest line
      */
@@ -310,7 +309,8 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
      * from the list.
      *
      * @param lines list of lines
-     * @return the closest line, or <code>null</code> if <code>lines</code> is empty
+     * @return the closest line, or <code>null</code> if <code>lines</code> is
+     * empty
      */
     @Nullable
     public Line getClosestFrom(@Nonnull Collection<? extends Line> lines) {
@@ -339,8 +339,8 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * Returns the median of the space width in this line.
-     * Returns null if there are not enough words.
+     * Returns the median of the space width in this line. Returns null if there
+     * are not enough words.
      *
      * @return median space width, or <code>null</code> if not available
      */
@@ -369,19 +369,19 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
 
     /**
      * Returns a string containing texts of words from given range,
-     * <b>not</b> separated by spaces.
-     * The range of words starts from index <code>offset</code> (0-based)
-     * and contains <code>length</code> words.
+     * <b>not</b> separated by spaces. The range of words starts from index
+     * <code>offset</code> (0-based) and contains <code>length</code> words.
      * <br/>
      * If <code>length</code> &lt;= 0, the result is an empty string.
      * <br/>
-     * If <code>offset</code> &gt;= <code>this.words.size()</code>, the result is an empty string.
+     * If <code>offset</code> &gt;= <code>this.words.size()</code>, the result
+     * is an empty string.
      * <br/>
-     * If <code>offset+length</code> &gt; <code>this.words.size()</code>,
-     * only the available words are used.
+     * If <code>offset+length</code> &gt; <code>this.words.size()</code>, only
+     * the available words are used.
      * <br/>
-     * If <code>offset</code> &lt; 0,
-     * it treats it as if it was 0 and <code>length</code> was correspondingly lower.
+     * If <code>offset</code> &lt; 0, it treats it as if it was 0 and
+     * <code>length</code> was correspondingly lower.
      *
      * @param offset index of the first word in the range
      * @param length number of words to include
@@ -425,21 +425,24 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * Checks if all words in this line are blank.
-     * Empty lines are treated as blank.
+     * Checks if all words in this line are blank. Empty lines are treated as
+     * blank.
      *
-     * @return <code>true</code> is all the words are blank, <code>false otherwise</code>
+     * @return <code>true</code> is all the words are blank,
+     * <code>false otherwise</code>
      */
     public boolean isBlank() {
         for (Word e : words) {
-            if (!e.isBlank()) return false;
+            if (!e.isBlank()) {
+                return false;
+            }
         }
         return true;
     }
 
     /**
-     * Creates a new line with all words modified by the given function.
-     * Bounds are recalculated unless this line contains no words.
+     * Creates a new line with all words modified by the given function. Bounds
+     * are recalculated unless this line contains no words.
      *
      * @param f word-modifying function
      * @return modified line
@@ -455,10 +458,9 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * Creates a new line with all bounds modified by the given function.
-     * Bounds are recalculated unless this line contains no words;
-     * If there are no words, the bounds of this line
-     * are modified using the given function.
+     * Creates a new line with all bounds modified by the given function. Bounds
+     * are recalculated unless this line contains no words; If there are no
+     * words, the bounds of this line are modified using the given function.
      *
      * @param f bounds-modifying function
      * @return modified line
@@ -480,7 +482,8 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * Returns a lowercase string containing texts of all words in this line, not separated by spaces.
+     * Returns a lowercase string containing texts of all words in this line,
+     * not separated by spaces.
      *
      * @param locale locale used to convert strings to lowercase
      * @return lowercase string
@@ -494,8 +497,8 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * Creates a string with all words from this line, space-separated,
-     * without the words that may be OCR artifacts.
+     * Creates a string with all words from this line, space-separated, without
+     * the words that may be OCR artifacts.
      *
      * @return string representation of most words in this line.
      * @see Word#mayBeOcrArtifact()
@@ -509,7 +512,7 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
                 if (lastWasWord) {
                     sb.append(' ');
                 }
-                sb.append(w.getText());
+                sb.append(w.getText().replace('\n', Character.MIN_VALUE).trim());
                 lastWasWord = true;
             }
         }
@@ -547,8 +550,8 @@ public class Line extends DelegatingUnmodifiableList<Word> implements Bounded {
     }
 
     /**
-     * Returns a string representation of the list of words,
-     * containing also bounds of each of the words.
+     * Returns a string representation of the list of words, containing also
+     * bounds of each of the words.
      *
      * @return string representation
      */
