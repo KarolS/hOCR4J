@@ -1,6 +1,7 @@
 package Examples;
 
 import io.github.karols.hocr4j.Line;
+import io.github.karols.hocr4j.LineThat;
 import io.github.karols.hocr4j.Page;
 import io.github.karols.hocr4j.dom.HocrParser;
 import java.io.IOException;
@@ -36,7 +37,18 @@ public class HOCRParsingExample {
 
         try {
             String hocr = readFile(SAMPLES_PATH + HOCR_FILE_NAME + ".hocr");
-            List<Page> pages = HocrParser.parse(hocr);
+            
+             List<Page> pages = HocrParser.parse(hocr);
+             Page page1=pages.get(0);
+             
+            System.out.println("===============find the line contains a word from page===================="); 
+            List<Line> lines = page1.findAllLines(LineThat.contains("GNU"));
+            for (Line line : lines) {
+                System.out.println(line.mkRoughString());
+
+            }
+           
+            System.out.println("===============   Dumping the full page line by line   ===================="); 
             for (Line line : pages.get(0).getAllLines()) {
                 System.out.println(line.mkRoughString());
 
